@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PS5 Controller Overlay — Animated</title>
+<style>
+  /* Page background must be transparent for OBS */
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  /* Container centers the controller and allows sizing */
+  .overlay-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* pass clicks through OBS if desired */
+  }
+
+  /* The controller "canvas" — transparent except the masked area */
+  .controller {
+    /* Adjust this size to match your stream layout.
+       OBS Browser Source width/height also control final size. */
+    width: 900px;     /* default size — change if you want */
+    height: 520px;    /* maintain approximate aspect ratio of PS5 controller */
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+    background: transparent;
+  }
+
+  /* The animated layer — using your GIF as background image.
+     background-size: cover makes it fill the controller mask */
+  .controller::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("https://usagif.com/wp-content/uploads/butterfly-animation-122.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; /* cover ensures the gif fills the shape */
+    /* Apply the mask (controller silhouette) so only the controller area is visible */
+    -webkit-mask-image: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">\
+        <path fill="#000" d="M220 180c-60 0-100 70-100 140s40 140 100 140h120c20 0 45-10 60-25l60-55c25-23 75-23 100 0l60 55c15 15 40 25 60 25h120c60 0 100-70 100-140s-40-140-100-140H820c-20 0-45 10-60 25l-60 55c-25 23-75 23-100 0l-60-55c-15-15-40-25-60-25H220z"/>\
+      </svg>');
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+
+    /* For non-webkit supporting browsers */
+    mask-image: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">\
+        <path fill="#000" d="M220 180c-60 0-100 70-100 140s40 140 100 140h120c20 0 45-10 60-25l60-55c25-23 75-23 100 0l60 55c15 15 40 25 60 25h120c60 0 100-70 100-140s-40-140-100-140H820c-20 0-45 10-60 25l-60 55c-25 23-75 23-100 0l-60-55c-15-15-40-25-60-25H220z"/>\
+      </svg>');
+    mask-size: contain;
+    mask-position: center;
+    mask-repeat: no-repeat;
+  }
+
+  /* Optional: subtle drop shadow to lift the controller off the stream */
+  .controller::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    filter: blur(18px) opacity(0.15);
+    background: black;
+    -webkit-mask-image: -webkit-linear-gradient(#000 0 0); /* keep shape */
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+
+  /* If you prefer a specific pixel size, override .controller width/height
+     to match your OBS Browser Source size exactly (e.g. 1920x1080) */
+</style>
+</head>
+<body>
+  <div class="overlay-wrap">
+    <div class="controller" aria-hidden="true"></div>
+  </div>
+</body>
+</html>
